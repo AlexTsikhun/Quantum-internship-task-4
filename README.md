@@ -57,3 +57,6 @@ I had very large image (10k x 10k) and I decided to divide them into smaller one
 
 <h2><center>Results:</center></h2>
 
+![image](https://user-images.githubusercontent.com/83775762/225122147-eb322552-0348-4899-bfc5-3ae689936690.png)
+
+This results with only 5 epoch, but maybe it's problem in segmentation. When cutting the image into smaller particles, it was chosen to cut them with a step smaller than the length of the image (photos overlapped).
