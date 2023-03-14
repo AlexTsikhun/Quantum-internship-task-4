@@ -51,3 +51,9 @@ Approaches that prevent erosion:
 └───requirements.txt                    <- The requirements file for reproducing the analysis environment, e.g. generated with `pip freeze > requirements.txt`
 ```
 ### Solution
+Goal - segmentation of satellite images. There is an earth layer in the images, and it is necessary to detect where is soil erosion. CV real world task.
+
+I had very large image (10k x 10k) and I decided to divide them into smaller ones (patches) - to be able to do some manipulations with them. After that, converted images to numpy arrays, made normalization put arrays to my own Unet-NN (got poor results, so I decided to try a different approach). This approach is transfer learning. Choose Unet architecture with backbone resnet34 and encoder weights - imagenet. The first result was of poor quality (in image background could be seen some image from imagenet dataset - it's unacceptable result). Сhanged the number of epochs (10 to 100) for receiving better result, but it didn't help... (there was also an approach with giving coefficients for classes (because the data is very unbalanced), but this approach was not successful). (I want to try 2000 epochs, to make sure that she was overfitting, with kaggle TPU).
+
+<h2><center>Results:</center></h2>
+
