@@ -8,21 +8,17 @@ from sklearn.model_selection import train_test_split
 from PIL import Image
 import random
 
-import tensorflow as tf
+from tensorflow import keras
 
-from tensorflow.python.keras.callbacks import ModelCheckpoint
-from tensorflow.python.keras import Model
-from tensorflow.python.keras.models import Input
-from tensorflow.python.keras.layers import Conv2D, MaxPooling2D, Dropout, concatenate, UpSampling2D
-
-from keras.layers import Input, Conv2D, MaxPooling2D, UpSampling2D, concatenate, Conv2DTranspose, BatchNormalization, Dropout, Lambda
+from keras.callbacks import ModelCheckpoint
 
 from keras.utils import normalize
-
+import os
+os.environ["SM_FRAMEWORK"] = "tf.keras"
 import matplotlib.pyplot as plt
 import segmentation_models as sm
 
-from tensorflow.python.keras.models import load_model
+from keras.models import load_model
 
 
 BACKBONE = 'resnet34'
@@ -57,15 +53,14 @@ for i, image_name in enumerate(masks):
         # convert list to array (NN accepts array!)
         mask_dataset.append(np.array(image))
 
+image_dataset = np.array(image_dataset)
+mask_dataset = np.array(mask_dataset)
+# mask_dataset = np.expand_dims(mask_dataset, axis=3)
+
 #Normalize images
-image_dataset = np.expand_dims(normalize(np.array(image_dataset), axis=1),3)
+image_dataset = normalize(image_dataset, axis=1)
 #D not normalize masks, just rescale to 0 to 1.
-mask_dataset = np.expand_dims((np.array(mask_dataset)),3) /255.
-
-image_dataset = np.squeeze(image_dataset, axis=3)
-# mask_dataset = np.squeeze(mask_dataset, axis=3)
-print(image_dataset.shape, mask_dataset.shape)
-
+mask_dataset = np.expand_dims((mask_dataset),3) /255.
 
 X_train, X_test, y_train, y_test = train_test_split(image_dataset, mask_dataset, test_size = 0.1, random_state = 0)
 
@@ -77,7 +72,7 @@ IMG_WIDTH  = image_dataset.shape[2]
 IMG_CHANNELS = image_dataset.shape[3]
 
 
-model = load_model('models/unet-sm.h5', compile=False)
+model = load_model('models/unet-sm_5.h5', compile=False)
 
 
 test_img_number = 179#random.randint(0, len(X_test))
@@ -92,14 +87,18 @@ test_img = cv2.resize(test_img, (IMG_HEIGHT, IMG_WIDTH))
 # plt.imshow(test_img, cmap='gray')
 test_img = np.expand_dims(test_img, axis=0)
 
-prediction = model.predict(test_img)[0,:,:,0] > 0.05
+prediction = model.predict(test_img)[0]
 
 
 plt.imshow(y_train[test_img_number], cmap='gray')
 
 prediction_image = prediction.reshape((256, 256))
 plt.imshow(prediction_image)
-
+# compare
+fig, ax = plt.subplots(1, 2)
+ax[0].imshow(mask_dataset[test_img_number])
+ax[1].imshow(prediction_image)
+plt.show()
 
 # more visualize
 test_img = cv2.imread('data/patches/images/image_0_0.jp2', cv2.IMREAD_COLOR)       
