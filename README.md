@@ -36,10 +36,12 @@ Approaches that prevent erosion:
 |   └───train.jp2  
 |
 ├───notebooks                            <- EDA
-│   └───patches-images-split.ipynb.ipynb <- Make smaller images (patches)
-│   └───soil-erosion-detect-eda.ipynb.ipynb  <- EDA notebook
+│   |───patches-images-split.ipynb       <- Make smaller images (patches)
+│   |───soil-erosion-detect-eda.ipynb    <- EDA notebook
+│   └───train-unet-soil-erosion.ipynb    <- train unet model (patches)
 |
-├───models                              
+├───models
+|   |───unet-sm_5.h5                     <- Trained in 5 epoch
 |   └───unet-sm.h5
 |
 ├───large_image_to_patches.py
